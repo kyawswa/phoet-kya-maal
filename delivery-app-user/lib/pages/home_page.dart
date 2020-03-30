@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'model/order.dart';
+import 'package:flutter_app_bloc/model/order.dart';
 
 class HomePage extends StatefulWidget {
   HomePage({Key key}) : super(key: key);
