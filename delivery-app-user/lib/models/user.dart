@@ -1,25 +1,40 @@
+import 'package:flutter/widgets.dart';
+import 'package:flutter_app_bloc/entities/user_entities.dart';
+
+@immutable
 class User {
+  final String id;
   final String username;
   final String phoneNumber;
   final String address;
   final String division;
   final String township;
 
-  User({this.username, this.phoneNumber, this.address, this.division,
-      this.township});
+  User(
+      {String username = '',
+      String phoneNumber = '',
+      String address = '',
+      String division = '',
+      String township = '',
+      String id})
+      : this.username = username ?? '',
+        this.phoneNumber = phoneNumber ?? '',
+        this.address = address ?? '',
+        this.township = township ?? '',
+        this.division = division ?? '',
+        this.id = id;
 
-  User.fromJson(Map<String, dynamic> json)
-      : username = json['username'],
-        phoneNumber = json['phone_number'],
-        address = json['address'],
-        division = json['diviosn'],
-        township = json['township'];
+  UserEntity toEntity() {
+    return UserEntity(id, username, phoneNumber, address, division, township);
+  }
 
-  Map<String, dynamic> toJson() => {
-        'username': username,
-        'phone_number': phoneNumber,
-        'address': address,
-        'division': division,
-        'township': township
-      };
+  static User fromEntity(UserEntity entity) {
+    return User(
+        id: entity.id,
+        username: entity.username,
+        phoneNumber: entity.phoneNumber,
+        address: entity.address,
+        division: entity.division,
+        township: entity.township);
+  }
 }

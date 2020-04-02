@@ -176,8 +176,8 @@ class _UserRegistrationState extends State<UserRegistration> {
                           address: _addressController.text,
                           division: _selectDivision,
                           township: _selectTownship);
-                      prefs.setString(Constants.USER_REGISTER_DATA,
-                          user.toJson().toString());
+                      // prefs.setString(Constants.USER_REGISTER_DATA,
+                      //     user.toJson().toString());
                     }
                   },
                   child: Text('Register'),
