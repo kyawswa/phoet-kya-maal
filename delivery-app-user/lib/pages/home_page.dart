@@ -1,19 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app_bloc/model/order.dart';
+import 'package:flutter_app_bloc/bloc/order/order_bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_app_bloc/service/firestore_service.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-class HomePage extends StatefulWidget {
-  HomePage({Key key}) : super(key: key);
-
-  @override
-  _HomePageState createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> {
-  List<Order> orders = List.generate(10, (index) => Order.mock(index));
-
+class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    var firestore = RepositoryProvider.of<FirestoreService>(context);
     return Scaffold(
       appBar: AppBar(
         title: Text('ပို့ကြမယ်'),
@@ -27,24 +21,10 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
       ),
-      body: StreamBuilder(
-        stream: Firestore.instance.collection('orders').snapshots(),
-        builder: (context, snapshot) {
-          if (!snapshot.hasData)
-            return Center(child: CircularProgressIndicator());
-          return ListView.separated(
-            itemCount: snapshot.data.documents.length,
-            itemBuilder: (context, index) => _buildOrderCard(
-              context,
-              index + 1,
-              snapshot.data.documents[index],
-            ),
-            separatorBuilder: (_, __) => Divider(color: Colors.transparent),
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 16),
-          );
-        },
+      body: BlocProvider(
+        create: (context) => OrderBloc(firestore),
+        child: OrderList(),
       ),
-      // : Center(child: Text('မှာယူထားသော အော်ဒါမရှိပါ')),
       bottomNavigationBar: BottomAppBar(
         child: ButtonBar(
           alignment: MainAxisAlignment.center,
@@ -61,6 +41,41 @@ class _HomePageState extends State<HomePage> {
           ],
         ),
       ),
+    );
+  }
+}
+
+class OrderList extends StatefulWidget {
+  const OrderList({
+    Key key,
+  }) : super(key: key);
+
+  @override
+  _OrderListState createState() => _OrderListState();
+}
+
+class _OrderListState extends State<OrderList> {
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<OrderBloc, OrderState>(
+      builder: (context, state) {
+        if (state is OrderLoaded) {
+          if (state.snapshot.documents.length < 1) {
+            return Center(child: Text('မှာယူထားသော အော်ဒါမရှိပါ'));
+          }
+          return ListView.separated(
+            itemCount: state.snapshot.documents.length,
+            itemBuilder: (context, index) => _buildOrderCard(
+              context,
+              index + 1,
+              state.snapshot.documents[index],
+            ),
+            separatorBuilder: (_, __) => Divider(color: Colors.transparent),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 16),
+          );
+        }
+        return Center(child: CircularProgressIndicator());
+      },
     );
   }
 
