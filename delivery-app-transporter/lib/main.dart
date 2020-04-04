@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app_bloc/bloc/filter/filter_bloc.dart';
 import 'package:flutter_app_bloc/pages/dashboard.dart';
 import 'package:flutter_app_bloc/service/order_service.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -28,7 +29,15 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: Dashboard(),
+      home: MultiBlocProvider(
+        providers: [
+          BlocProvider<FilterBloc>(
+            create: (BuildContext context) =>
+                FilterBloc(BlocProvider.of<DashboardBloc>(context)),
+          ),
+        ],
+        child: Dashboard(),
+      ),
     );
   }
 }

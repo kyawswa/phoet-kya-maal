@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/physics.dart';
 import 'package:flutter_app_bloc/bloc/dashboard/dashboard.dart';
+import 'package:flutter_app_bloc/bloc/filter/fliter.dart';
 import 'package:flutter_app_bloc/model/models.dart';
 import 'package:flutter_app_bloc/service/order_service.dart';
+import 'package:flutter_app_bloc/widgets/filtered_order.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 
@@ -16,115 +18,56 @@ class _DashboardState extends State<Dashboard> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<DashboardBloc, DashboardState>(
-        builder: (BuildContext context, DashboardState state) {
-      List<Order> orders;
-      if (state is DashboardLoaded) {
-        orders = (state as DashboardLoaded).orders;
-      }
 
-      return Scaffold(
-          appBar: AppBar(
-            title: Text('ပို့ကြမယ်'),
-            centerTitle: true,
-            actions: <Widget>[
-              IconButton(
-                icon: Icon(Icons.account_circle),
-                onPressed: () {
-                  //TODO: navigate to Cheers screen
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) =>
-                            CheerUp()),
-                  );
-                },
-              ),
-            ],
-          ),
-          body: state is DashboardLoading
-              ? Center(child: CircularProgressIndicator())
-              : ListView.separated(
-                  itemCount: orders?.length?? 0,
-                  itemBuilder: (context, index) {
-                    Order order = orders[index];
+      return BlocBuilder<FilterBloc, FilterState>(
+          builder: (BuildContext context, FilterState state) {
+            Color getColor(VisibilityFilter input) {
+              if(BlocProvider.of<FilterBloc>(context).state is FilteredLoaded) {
+                VisibilityFilter filter = (BlocProvider.of<FilterBloc>(context).state as FilteredLoaded).activeFilter;
 
-                    return Card(
-                      elevation: 4,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 8.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            ListTile(
-                              title: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: <Widget>[
-                                  Text(order.user.name),
-                                  Text('(${order.user.phoneNo})'),
-                                ],
-                              ),
-                              trailing: Text(
-                                  '${DateTime.parse(order.orderTimeStamp
-                                      .toDate().toString())}'
-                              ),
-                            ),
-                            Divider(indent: 100, endIndent: 100, height: 10),
-                            ListTile(
-                              title: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: <Widget>[Text(order.user.address)],
-                              ),
-                            ),
-                            ButtonBar(
-                              alignment: MainAxisAlignment.center,
-                              buttonMinWidth: 200,
-                              children: <Widget>[
-                                RaisedButton(
-                                  child: Text("DELIVERED"),
-                                  onPressed: () {
-                                    BlocProvider.of<DashboardBloc>(context).add(
-                                        UpdateStatusToDelivered(order.id,
-                                            (state as DashboardLoaded).orders));
+                return filter == input ? Colors.lightBlue : Colors.white;
+              }
+              return Colors.white;
+            }
 
-                                    // TODO:: to status
-                                  },
-                                  color: Colors.green,
-                                  textColor: Colors.white,
-                                  padding: EdgeInsets.fromLTRB(10, 10, 10, 10),
-                                ),
-                              ],
-                            )
-                          ],
-                        ),
-                      ),
-                    );
-                  },
-                  separatorBuilder: (_, __) => Divider(
-                    color: Colors.transparent,
+          return Scaffold(
+              appBar: AppBar(
+                title: Text('ပို့ကြမယ်'),
+                centerTitle: true,
+                actions: <Widget>[
+                  IconButton(
+                    icon: Icon(Icons.account_circle),
+                    onPressed: () {
+                      //TODO: navigate to Cheers screen
+                    },
                   ),
+                ],
+              ),
+              body: state is DashboardLoading
+                  ? Center(child: CircularProgressIndicator())
+                  : FilteredOrders(),
+              bottomNavigationBar: BottomAppBar(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: <Widget>[
+                    RaisedButton(
+                      onPressed: () {
+                        BlocProvider.of<FilterBloc>(context).add(UpdateFilter(VisibilityFilter.ASSIGN));
+                      },
+                      child: Text('Assign'),
+                      color: getColor(VisibilityFilter.ASSIGN)
+                    ),
+                    RaisedButton(
+                      onPressed: () {
+                        BlocProvider.of<FilterBloc>(context).add(UpdateFilter(VisibilityFilter.PENDING));
+                      },
+                      child: Text('Pending'),
+                      color: getColor(VisibilityFilter.PENDING)
+                    ),
+                  ],
                 ),
-          bottomNavigationBar: BottomAppBar(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: <Widget>[
-                RaisedButton(
-                  onPressed: () {
-                    //TODO: navigate to User-Step 1 screen or User-Registeration screen (if not registered)
-                  },
-                  child: Text('Pending'),
-                  color: Colors.white,
-                ),
-                RaisedButton(
-                  onPressed: () {
-                    //TODO: navigate to User-Step 1 screen or User-Registeration screen (if not registered)
-                  },
-                  child: Text('Accept'),
-                  color: Colors.white,
-                ),
-              ],
-            ),
-          ));
-    });
+              ));
+        }
+      );
   }
 }

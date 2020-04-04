@@ -63,7 +63,7 @@ class Order {
 
 }
 
-enum OrderState { PENDING, ACCEPT, REJECT, CANCELLED, DELIVERED }
+enum OrderState { PENDING, ACCEPT, REJECT, CANCELLED, DELIVERED, ASSIGN }
 
 extension ShortString on OrderState {
   String toShortString() {
