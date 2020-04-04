@@ -21,7 +21,7 @@ class OrderBloc extends Bloc<OrderEvent, OrderViewState>{
     else if(event is OrderRejected) yield* _mapRejectedToState(event);
     else if(event is OrderCancelled) yield* _mapCancelledToState(event);
     else if(event is OrderAdded) yield* _mapAddedToState(event);
-    else _mapDeliveredToState(event);
+    else yield* _mapDeliveredToState(event);
   }
 
   Stream<OrderViewState> _mapAddedToState(OrderAdded event) async*{
@@ -33,7 +33,7 @@ class OrderBloc extends Bloc<OrderEvent, OrderViewState>{
     try{
       yield OrderViewLoading();
       order.status = OrderState.ACCEPT.toString();
-      await orderService.processOrder(order.id, OrderState.ACCEPT);
+//      await orderService.processOrder(order.id, OrderState.ACCEPT);
       yield OrderViewSuccess(order);
     }catch(_){
       yield OrderViewFailure("Error. Failed To Accept", order);
@@ -45,7 +45,7 @@ class OrderBloc extends Bloc<OrderEvent, OrderViewState>{
     try{
       yield OrderViewLoading();
       order.status = OrderState.CANCELLED.toString();
-      await orderService.processOrder(order.id, OrderState.CANCELLED);
+//      await orderService.processOrder(order.id, OrderState.CANCELLED);
       yield OrderViewSuccess(order);
     }catch(_){
       yield OrderViewFailure("Error. Failed To Cancel", order);
@@ -57,7 +57,7 @@ class OrderBloc extends Bloc<OrderEvent, OrderViewState>{
     try{
       yield OrderViewLoading();
       order.status = OrderState.REJECT.toString();
-      await orderService.processOrder(order.id, OrderState.REJECT);
+//      await orderService.processOrder(order.id, OrderState.REJECT);
       yield OrderViewSuccess(order);
     }catch(_){
       yield OrderViewFailure("Error. Failed To Reject", order);
@@ -69,7 +69,7 @@ class OrderBloc extends Bloc<OrderEvent, OrderViewState>{
     try{
       yield OrderViewLoading();
       order.status = OrderState.DELIVERED.toString();
-      await orderService.processOrder(order.id, OrderState.DELIVERED);
+//      await orderService.processOrder(order.id, OrderState.DELIVERED);
       yield OrderViewSuccess(order);
     }catch(_){
       yield OrderViewFailure("Error. Failed To Cancel", order);

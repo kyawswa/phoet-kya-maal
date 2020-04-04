@@ -15,7 +15,7 @@ void main() {
   User user =  User("123", "HNN", "0945116113", "AEREIAMCIAWERAR");
   Order order = Order("123", user, user, Timestamp.fromDate(DateTime.now()), null, OrderState.PENDING.toString(), [
     { "category": "RICE", "quantity" : 2},
-    { "category": "အအေး", "quantity" : 2},
+    { "category": "Drink", "quantity" : 2},
   ]);
 
   runApp(BlocProvider(create: (context){

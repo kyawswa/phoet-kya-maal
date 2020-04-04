@@ -34,7 +34,7 @@ class AcceptDialogState extends State<AcceptDialog> {
       content: TextField(
         controller: _textController,
         keyboardType: TextInputType.number,
-        decoration: InputDecoration(border: OutlineInputBorder(), labelText: ("In Minutes"), errorText: _textValid ? "": "Duration Must Not Be Empty"),
+        decoration: InputDecoration(border: OutlineInputBorder(), labelText: ("In Minutes"), errorText: _textValid ? null: "Duration Must Not Be Empty"),
       ),
       actions: <Widget>[
         ButtonBar(alignment: MainAxisAlignment.spaceEvenly,children: <Widget>[
@@ -54,7 +54,7 @@ class AcceptDialogState extends State<AcceptDialog> {
               });
             }
           }, icon: Icon(Icons.directions_bike), label: Text("Accept")),
-          OutlineButton.icon(onPressed: ()=>Navigator.pop(context), icon: Icon(Icons.cancel), label: Text("Cancel"), color: Colors.red,),
+          OutlineButton.icon(onPressed: ()=>Navigator.pop(context), icon: Icon(Icons.cancel), label: Text("Cancel"), textColor: Colors.redAccent,),
         ],)
       ],
     );
