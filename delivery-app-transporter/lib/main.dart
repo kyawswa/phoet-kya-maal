@@ -14,6 +14,7 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
+  static const INITIAL_ROUTE = OrderDetailsScreen.SCREEN_ROUTE_NAME;
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
@@ -42,7 +43,7 @@ class MyApp extends StatelessWidget {
           );
         }
       },
-      initialRoute: OrderDetailsScreen.SCREEN_ROUTE_NAME,
+      initialRoute: INITIAL_ROUTE,
     );
   }
 }

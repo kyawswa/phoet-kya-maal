@@ -50,22 +50,6 @@ class OrderDetailsScreen extends StatelessWidget {
         context: context, builder: (context) => deliveredDialog(context));
   }
 
-  void showFinishDelivery(BuildContext context) {
-    showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-              title: Text("Thank You"),
-              content: Text(
-                  "Items Are Successfully Delivered. Thank You For Your Work"),
-              actions: <Widget>[
-                OutlineButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: Text("Close"),
-                )
-              ],
-            ));
-  }
-
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<OrderBloc, OrderViewState>(
@@ -122,7 +106,7 @@ class OrderDetailsScreen extends StatelessWidget {
                         "Are You Sure Order Is Delivered To Customer?",
                         () => BlocProvider.of<OrderBloc>(context)
                             .add(OrderDelivered(stateOrder))))
-                      showFinishDelivery(context);
+                      showDeliveredDialog(context);
                   },
                   icon: Icon(Icons.directions_bike),
                   label: Text("Finish Delivery")));
