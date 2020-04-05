@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:flutter_app_bloc/models.dart';
+import 'package:flutter_app_bloc/models/models.dart';
 
 abstract class OrderEvent extends Equatable {
   const OrderEvent();

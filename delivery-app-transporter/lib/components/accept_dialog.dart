@@ -1,12 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app_bloc/bloc/order/order.dart';
-import 'package:flutter_app_bloc/models.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-
 class AcceptDialog extends StatefulWidget {
-  final Order order;
+  final Function(int estMinute) onAccept;
 
-  const AcceptDialog({Key key, @required this.order}) : super(key: key);
+  const AcceptDialog({Key key,@required this.onAccept}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -28,7 +24,6 @@ class AcceptDialogState extends State<AcceptDialog> {
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    Order order = widget.order;
     return AlertDialog(
       title: Text("Estimated Delivery Duration"),
       content: TextField(
@@ -40,8 +35,7 @@ class AcceptDialogState extends State<AcceptDialog> {
         ButtonBar(alignment: MainAxisAlignment.spaceEvenly,children: <Widget>[
           OutlineButton.icon(onPressed: (){
             if(_textController.text.isNotEmpty) {
-              order.estimatedTime = int.parse(_textController.text);
-              BlocProvider.of<OrderBloc>(context).add(OrderAccepted(order));
+              widget.onAccept(int.parse(_textController.text));
               Navigator.pop(context);
             }else {
               setState(() {

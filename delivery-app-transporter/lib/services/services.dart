@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter_app_bloc/models.dart';
+import 'package:flutter_app_bloc/models/models.dart';
 
 class OrderService{
   final Firestore _firestore = Firestore.instance;

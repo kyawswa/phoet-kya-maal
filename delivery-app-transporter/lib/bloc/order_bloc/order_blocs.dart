@@ -1,8 +1,7 @@
 
-import 'package:flutter_app_bloc/models.dart';
-import 'package:flutter_app_bloc/bloc/order/order_events.dart';
-import 'package:flutter_app_bloc/bloc/order/order_states.dart';
-import 'package:flutter_app_bloc/services.dart';
+import 'package:flutter_app_bloc/bloc/order_bloc/order.dart';
+import 'package:flutter_app_bloc/models/models.dart';
+import 'package:flutter_app_bloc/services/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class OrderBloc extends Bloc<OrderEvent, OrderViewState>{

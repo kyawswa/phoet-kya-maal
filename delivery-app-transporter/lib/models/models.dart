@@ -13,7 +13,7 @@ class User{
   String phoneNo;
   String address;
 
-
+  User.empty();
   User(this.id, this.name, this.phoneNo, this.address);
 
   User.fromMap(Map<String, dynamic> inputMap){
@@ -37,6 +37,7 @@ class Order{
   static const FIELD_STATUS="";
   static const FIELD_ESTIMATED="";
   static const FIELD_ORDER_ITEMS="";
+  static const FIELD_REJECT_REASON="";
 
   String id;
   User user;
@@ -44,8 +45,10 @@ class Order{
   Timestamp orderTimeStamp;
   int estimatedTime;
   String status;
+  String rejectReason;
   List<Map<String, dynamic>> orderItems;
 
+  Order.empty();
 
   Order(this.id, this.user, this.deliveryPerson, this.orderTimeStamp,
       this.estimatedTime, this.status, this.orderItems);
@@ -58,6 +61,7 @@ class Order{
     deliveryPerson = User.fromMap(inputMap[FIELD_DELIVERY_PERSON]);
     estimatedTime = inputMap[FIELD_ESTIMATED];
     status = inputMap[FIELD_STATUS];
+    rejectReason = inputMap[FIELD_REJECT_REASON];
   }
 
 
