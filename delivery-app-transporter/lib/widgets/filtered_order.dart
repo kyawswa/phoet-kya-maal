@@ -4,15 +4,34 @@ import 'package:flutter_app_bloc/bloc/filter/filter_bloc.dart';
 import 'package:flutter_app_bloc/bloc/filter/filter_state.dart';
 import 'package:flutter_app_bloc/model/models.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 
 class FilteredOrders extends StatelessWidget {
+  final VisibilityFilter visibilityFilter;
+
+  FilteredOrders(this.visibilityFilter);
+
+  String dateFormat = 'dd/MM/yyyy – kk:mm';
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<FilterBloc, FilterState>(
       builder: (context, state) {
         List<Order> orders;
+
+        List<Order> _filteredOrders(
+            List<Order> orders, VisibilityFilter filter) {
+          return orders.where((order) {
+            if (filter == VisibilityFilter.PENDING) {
+              return order.status == OrderState.PENDING.toShortString();
+            }
+            return order.status == OrderState.ACCEPT.toShortString() ||
+                order.status == OrderState.ASSIGN.toShortString();
+          }).toList();
+        }
+
         if (state is FilteredLoaded) {
-          orders = state.filteredOrders;
+          orders = _filteredOrders(state.filteredOrders, visibilityFilter);
         }
 
         return ListView.separated(
@@ -44,7 +63,7 @@ class FilteredOrders extends StatelessWidget {
                           ],
                         ),
                         trailing: Text(
-                            '${DateTime.parse(order.orderTimeStamp.toDate().toString())}'),
+                            '${DateFormat(dateFormat).format(order.orderTimeStamp.toDate())}'),
                       ),
                       Divider(indent: 100, endIndent: 100, height: 10),
                       ListTile(
@@ -53,10 +72,7 @@ class FilteredOrders extends StatelessWidget {
                           children: <Widget>[Text(order.user.address)],
                         ),
                       ),
-                      (BlocProvider.of<FilterBloc>(context).state
-                                      as FilteredLoaded)
-                                  .activeFilter ==
-                              VisibilityFilter.ASSIGN
+                      visibilityFilter == VisibilityFilter.ASSIGN
                           ? Container()
                           : ButtonBar(
                               alignment: MainAxisAlignment.center,

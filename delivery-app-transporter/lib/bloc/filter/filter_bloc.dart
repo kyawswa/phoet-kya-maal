@@ -69,15 +69,16 @@ class FilterBloc extends Bloc<FilterEvent, FilterState> {
 
   List<Order> _mapOrdersToFilteredOrders(
       List<Order> orders, VisibilityFilter filter) {
-    return orders.where((order) {
-      if (filter == VisibilityFilter.PENDING) {
-        return order.status == OrderState.PENDING.toShortString();
-      }
-      return order.status == OrderState.ACCEPT.toShortString() ||
-          order.status == OrderState.ASSIGN.toShortString() ||
-          order.status == OrderState.REJECT.toShortString();
+    return orders;
 
-    }).toList();
+    // TODO: to reconsider with state change
+//    return orders.where((order) {
+//      if (filter == VisibilityFilter.PENDING) {
+//        return order.status == OrderState.PENDING.toShortString();
+//      }
+//      return order.status == OrderState.ACCEPT.toShortString() ||
+//          order.status == OrderState.ASSIGN.toShortString();
+//    }).toList();
   }
 
   @override
