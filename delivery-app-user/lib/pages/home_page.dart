@@ -1,3 +1,4 @@
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app_bloc/bloc/order/order_bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -28,20 +29,32 @@ class HomePage extends StatelessWidget {
           firestore: firestore,
           userId: '', //TODO: put user id
         ),
-        child: OrderList(),
-      ),
-      bottomNavigationBar: BottomAppBar(
-        child: ButtonBar(
-          alignment: MainAxisAlignment.center,
-          buttonMinWidth: 400,
-          buttonTextTheme: ButtonTextTheme.primary,
+        child: Column(
           children: <Widget>[
-            RaisedButton(
-              onPressed: () {
-                //TODO: navigate to User-Step 1 screen or User-Registeration screen (if not registered)
-              },
-              child: Text('အော်ဒါ မှာမယ်'),
-              color: Theme.of(context).primaryColor,
+            OfflineAlertWidget(),
+            Expanded(child: OrderList()),
+          ],
+        ),
+      ),
+      bottomNavigationBar: Builder(
+        builder: (context) => Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            BottomAppBar(
+              child: ButtonBar(
+                alignment: MainAxisAlignment.center,
+                buttonMinWidth: 400,
+                buttonTextTheme: ButtonTextTheme.primary,
+                children: <Widget>[
+                  RaisedButton(
+                    onPressed: () {
+                      //TODO: navigate to User-Step 1 screen or User-Registeration screen (if not registered)
+                    },
+                    child: Text('အော်ဒါ မှာမယ်'),
+                    color: Theme.of(context).primaryColor,
+                  ),
+                ],
+              ),
             ),
           ],
         ),
@@ -240,4 +253,49 @@ class _OrderListState extends State<OrderList> {
 
   String _getDateString(DateTime dateTime) =>
       '${dateTime.day}/${dateTime.month}/${dateTime.year}';
+}
+
+class OfflineAlertWidget extends StatefulWidget {
+  final Widget child;
+  final double height;
+  final Color backgroundColor;
+
+  const OfflineAlertWidget({
+    Key key,
+    this.child =
+        const Text('No Connection', style: TextStyle(color: Colors.white)),
+    this.height = 25,
+    this.backgroundColor = Colors.red,
+  }) : super(key: key);
+
+  @override
+  _OfflineAlertWidgetState createState() => _OfflineAlertWidgetState();
+}
+
+class _OfflineAlertWidgetState extends State<OfflineAlertWidget> {
+  bool _isOffline = false;
+
+  @override
+  void initState() {
+    super.initState();
+    Connectivity().onConnectivityChanged.listen((connectionState) {
+      print(connectionState);
+      setState(() {
+        _isOffline = connectionState == ConnectivityResult.none;
+      });
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return _isOffline
+        ? Container(
+            color: widget.backgroundColor,
+            height: widget.height,
+            child: Center(
+              child: widget.child,
+            ),
+          )
+        : Container();
+  }
 }
