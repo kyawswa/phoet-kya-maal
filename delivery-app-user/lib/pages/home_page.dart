@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app_bloc/bloc/order/order_bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_app_bloc/model/models.dart';
 import 'package:flutter_app_bloc/model/order.dart';
 import 'package:flutter_app_bloc/service/firestore_service.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -50,9 +51,7 @@ class HomePage extends StatelessWidget {
 }
 
 class OrderList extends StatefulWidget {
-  const OrderList({
-    Key key,
-  }) : super(key: key);
+  const OrderList({Key key}) : super(key: key);
 
   @override
   _OrderListState createState() => _OrderListState();
@@ -71,8 +70,8 @@ class _OrderListState extends State<OrderList> {
             itemCount: state.orders.length,
             itemBuilder: (context, index) => _buildOrderCard(
               context,
-              index + 1,
-              state.orders[index],
+              orderNum: index + 1,
+              order: state.orders[index],
             ),
             separatorBuilder: (_, __) => Divider(color: Colors.transparent),
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 16),
@@ -84,16 +83,16 @@ class _OrderListState extends State<OrderList> {
   }
 
   Widget _buildOrderCard(
-    BuildContext context,
-    int orderNum,
-    Order order,
-  ) {
+    BuildContext context, {
+    @required int orderNum,
+    @required Order order,
+  }) {
     return Card(
       elevation: 4,
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8.0),
+        padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
             ListTile(
               title: Text(
@@ -106,67 +105,94 @@ class _OrderListState extends State<OrderList> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Divider(color: Colors.transparent, height: 10),
-                  Row(
-                    children: <Widget>[
-                      Icon(Icons.calendar_today,
-                          color: Colors.black54, size: 18),
-                      VerticalDivider(width: 5),
-                      Text(
-                        'ပစ္စည်းပို့မည့်နေ့: ' +
-                            _getDateString(DateTime.fromMillisecondsSinceEpoch(
-                              order.deliverTime.millisecondsSinceEpoch,
-                            )),
-                      ),
-                    ],
-                  ),
-                  Divider(color: Colors.transparent, height: 2),
-                  Row(
-                    children: <Widget>[
-                      Icon(Icons.access_time, color: Colors.black54, size: 18),
-                      VerticalDivider(width: 5),
-                      Text(
-                        'ပစ္စည်းပို့မည့်အချိန်: ' +
-                            _getTimeString(DateTime.fromMillisecondsSinceEpoch(
-                              order.estimatedTime.millisecondsSinceEpoch,
-                            )),
-                      ),
-                    ],
-                  ),
+                  _buildDeliverDayWidget(order.deliverTime),
+                  if (order.estimatedTime != null)
+                    _buildDeliverTimeWidget(order.estimatedTime),
+                  Divider(color: Colors.transparent, height: 10),
                 ],
               ),
             ),
-            Divider(indent: 100, endIndent: 100, height: 10),
-            ListTile(
-              title: Text(
-                'မှာထား‌သော ပစ္စည်းများ',
-                style: Theme.of(context).textTheme.caption,
-              ),
-              trailing: Text(
-                'အရေအတွက်',
-                style: Theme.of(context).textTheme.caption,
-              ),
-            ),
-            ...order.orderItems
-                .map(
-                  (item) => ListTile(
-                    leading: Icon(Icons.widgets),
-                    title: Text('${item.name}'),
-                    trailing: Text('${item.total}'),
-                  ),
-                )
-                .toList(),
-            // Divider(indent: 100, endIndent: 100, height: 10),
-            // ListTile(
-            //   title: Text(
-            //     'ကျသင့်ငွေ : ',
-            //     style: Theme.of(context).textTheme.subtitle.copyWith(
-            //           color: Theme.of(context).textTheme.caption.color,
-            //         ),
-            //   ),
-            //   trailing: Text('Kyat 10,000'),
-            // ),
+            Divider(height: 0),
+            _buildItemTable(order.orderItems),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildDeliverTimeWidget(Timestamp deliverTime) {
+    return Row(
+      children: <Widget>[
+        Icon(Icons.access_time, color: Colors.black54, size: 18),
+        VerticalDivider(width: 5),
+        Text('ပစ္စည်းပို့မည့်အချိန်: '),
+        Text(
+          _getTimeString(DateTime.fromMillisecondsSinceEpoch(
+            deliverTime.millisecondsSinceEpoch,
+          )),
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDeliverDayWidget(Timestamp deliverTime) {
+    return Row(
+      children: <Widget>[
+        Icon(Icons.calendar_today, color: Colors.black54, size: 18),
+        VerticalDivider(width: 5),
+        Text('ပစ္စည်းပို့မည့်နေ့: '),
+        Text(
+          _getDateString(DateTime.fromMillisecondsSinceEpoch(
+            deliverTime.millisecondsSinceEpoch,
+          )),
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildItemTable(List<Item> orderItems) {
+    return IgnorePointer(
+      ignoring: true, // prevent DataTable from firing pointer events
+      child: DataTable(
+        columns: [
+          DataColumn(label: const Text('မှာထား‌သော ပစ္စည်းများ')),
+          DataColumn(
+            label: const Text('အရေအတွက်'),
+            numeric: true,
+          ),
+        ],
+        rows: [
+          ...orderItems
+              .map((item) => DataRow(
+                    cells: [
+                      DataCell(
+                        Row(
+                          children: <Widget>[
+                            Icon(Icons.widgets),
+                            VerticalDivider(color: Colors.transparent),
+                            Text('${item.name}'),
+                          ],
+                        ),
+                      ),
+                      DataCell(Text('${item.total}')),
+                    ],
+                  ))
+              .toList(),
+          DataRow(
+            cells: [
+              DataCell(Text('ကျသင့်ငွေ :')),
+              DataCell(Text('ကျပ် 15,000')), //TODO: put total price
+            ],
+          )
+        ],
       ),
     );
   }
@@ -205,8 +231,12 @@ class _OrderListState extends State<OrderList> {
     );
   }
 
-  String _getTimeString(DateTime dateTime) =>
-      '${dateTime.hour}:${dateTime.minute}';
+  String _getTimeString(DateTime dateTime) {
+    var hour = dateTime.hour % 12;
+    var minute = '${dateTime.minute ~/ 10}${dateTime.minute % 10}';
+    var ampm = dateTime.hour < 12 ? 'AM' : 'PM';
+    return '$hour:$minute $ampm';
+  }
 
   String _getDateString(DateTime dateTime) =>
       '${dateTime.day}/${dateTime.month}/${dateTime.year}';
