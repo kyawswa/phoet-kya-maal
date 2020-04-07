@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:equatable/equatable.dart';
 import 'package:flutter_app_bloc/model/item.dart';
 import 'package:flutter_app_bloc/model/user.dart';
 
@@ -14,14 +15,14 @@ class Order {
   static const FIELD_ESTIMATED = "est";
   static const FIELD_ORDER_ITEMS = "items";
 
-  String id;
-  User user;
-  User deliveryPerson;
-  Timestamp orderTimeStamp;
-  Timestamp deliverTime;
-  Timestamp estimatedTime;
-  String status;
-  List<Item> orderItems;
+  final String id;
+  final User user;
+  final User deliveryPerson;
+  final Timestamp orderTimeStamp;
+  final Timestamp deliverTime;
+  final Timestamp estimatedTime;
+  final String status;
+  final List<Item> orderItems;
 
   Order({
     this.id,
@@ -31,41 +32,37 @@ class Order {
     this.deliverTime,
     this.estimatedTime,
     this.status,
-    this.orderItems});
+    this.orderItems,
+  });
 
-  Order.fromMap(Map<String, dynamic> inputMap) {
-    deliveryPerson = User(id: inputMap[FIELD_DELIVERY_PERSON_ID]);
-    estimatedTime = inputMap[FIELD_ESTIMATED];
-    orderTimeStamp = inputMap[FIELD_ORDER_TIMESTAMP];
-    deliverTime = inputMap[FIELD_DELIVERY_TIME];
-    status = inputMap[FIELD_STATE];
-    orderItems = Item.toList(inputMap[FIELD_ORDER_ITEMS]);
-    user = User.fromMap(inputMap[FIELD_USER]);
-  }
+  // Order.fromMap(Map<String, dynamic> inputMap)
+  //     : deliveryPerson = User(id: inputMap[FIELD_DELIVERY_PERSON_ID]),
+  //       estimatedTime = inputMap[FIELD_ESTIMATED],
+  //       orderTimeStamp = inputMap[FIELD_ORDER_TIMESTAMP],
+  //       deliverTime = inputMap[FIELD_DELIVERY_TIME],
+  //       status = inputMap[FIELD_STATE],
+  //       orderItems = Item.toList(inputMap[FIELD_ORDER_ITEMS]),
+  //       user = User.fromMap(inputMap[FIELD_USER]);
 
-  Order.fromMapWithID(DocumentSnapshot document) {
-    Map<String, dynamic> inputMap = document.data;
-    id = document.documentID;
-    deliveryPerson = User(id: inputMap[FIELD_DELIVERY_PERSON_ID]);
-    estimatedTime = inputMap[FIELD_ESTIMATED];
-    orderTimeStamp = inputMap[FIELD_ORDER_TIMESTAMP];
-    deliverTime = inputMap[FIELD_DELIVERY_TIME];
-    status = inputMap[FIELD_STATE];
-    orderItems = Item.toList(inputMap[FIELD_ORDER_ITEMS]);
-    user = User.fromMap(inputMap[FIELD_USER]);
-  }
+  Order.fromMapWithID(DocumentSnapshot document)
+      : id = document.documentID,
+        deliveryPerson = User(id: document.data[FIELD_DELIVERY_PERSON_ID]),
+        estimatedTime = document.data[FIELD_ESTIMATED],
+        orderTimeStamp = document.data[FIELD_ORDER_TIMESTAMP],
+        deliverTime = document.data[FIELD_DELIVERY_TIME],
+        status = document.data[FIELD_STATE],
+        orderItems = Item.toList(document.data[FIELD_ORDER_ITEMS]),
+        user = User.fromMap(document.data[FIELD_USER]);
 
   @override
   String toString() {
     return 'Order{id: $id, user: $user, deliveryPerson: $deliveryPerson, orderTimeStamp: $orderTimeStamp, deliverTime: $deliverTime, estimatedTime: $estimatedTime, status: $status, orderItems: $orderItems}';
   }
-
-
 }
 
-enum OrderState { PENDING, ACCEPT, REJECT, CANCELLED, DELIVERED, ASSIGN }
+enum OrderStatus { PENDING, ACCEPT, REJECT, CANCELLED, DELIVERED, ASSIGN }
 
-extension ShortString on OrderState {
+extension ShortString on OrderStatus {
   String toShortString() {
     return this.toString().split('.').last;
   }

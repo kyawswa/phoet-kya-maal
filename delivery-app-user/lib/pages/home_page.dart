@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app_bloc/bloc/order/order_bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_app_bloc/model/order.dart';
 import 'package:flutter_app_bloc/service/firestore_service.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -22,7 +23,7 @@ class HomePage extends StatelessWidget {
         ],
       ),
       body: BlocProvider(
-        create: (context) => OrderBloc(firestore),
+        create: (context) => OrderBloc(firestore: firestore),
         child: OrderList(),
       ),
       bottomNavigationBar: BottomAppBar(
@@ -60,15 +61,15 @@ class _OrderListState extends State<OrderList> {
     return BlocBuilder<OrderBloc, OrderState>(
       builder: (context, state) {
         if (state is OrderLoaded) {
-          if (state.snapshot.documents.length < 1) {
+          if (state.orders.length < 1) {
             return Center(child: Text('မှာယူထားသော အော်ဒါမရှိပါ'));
           }
           return ListView.separated(
-            itemCount: state.snapshot.documents.length,
+            itemCount: state.orders.length,
             itemBuilder: (context, index) => _buildOrderCard(
               context,
               index + 1,
-              state.snapshot.documents[index],
+              state.orders[index],
             ),
             separatorBuilder: (_, __) => Divider(color: Colors.transparent),
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 16),
@@ -82,7 +83,7 @@ class _OrderListState extends State<OrderList> {
   Widget _buildOrderCard(
     BuildContext context,
     int orderNum,
-    DocumentSnapshot order,
+    Order order,
   ) {
     return Card(
       elevation: 4,
@@ -96,7 +97,7 @@ class _OrderListState extends State<OrderList> {
                 'ORDER: $orderNum',
                 style: Theme.of(context).textTheme.title.copyWith(fontSize: 18),
               ),
-              trailing: _buildOrderState(order['state']),
+              trailing: _buildOrderState(order.status),
               isThreeLine: true,
               subtitle: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -110,7 +111,7 @@ class _OrderListState extends State<OrderList> {
                       Text(
                         'ပစ္စည်းပို့မည့်နေ့: ' +
                             _getDateString(DateTime.fromMillisecondsSinceEpoch(
-                              order['delivery_time'].millisecondsSinceEpoch,
+                              order.deliverTime.millisecondsSinceEpoch,
                             )),
                       ),
                     ],
@@ -123,7 +124,7 @@ class _OrderListState extends State<OrderList> {
                       Text(
                         'ပစ္စည်းပို့မည့်အချိန်: ' +
                             _getTimeString(DateTime.fromMillisecondsSinceEpoch(
-                              order['est'].millisecondsSinceEpoch,
+                              order.estimatedTime.millisecondsSinceEpoch,
                             )),
                       ),
                     ],
@@ -142,12 +143,12 @@ class _OrderListState extends State<OrderList> {
                 style: Theme.of(context).textTheme.caption,
               ),
             ),
-            ...List.from(order['items'])
+            ...order.orderItems
                 .map(
                   (item) => ListTile(
                     leading: Icon(Icons.widgets),
-                    title: Text('${item['item_name']}'),
-                    trailing: Text('${item['total']}'),
+                    title: Text('${item.name}'),
+                    trailing: Text('${item.total}'),
                   ),
                 )
                 .toList(),
@@ -168,7 +169,6 @@ class _OrderListState extends State<OrderList> {
   }
 
   Widget _buildOrderState(String state) {
-    state = 'PENDING';
     Color textColor;
     switch (state) {
       case 'PENDING':

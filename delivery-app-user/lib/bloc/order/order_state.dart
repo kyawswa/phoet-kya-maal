@@ -8,10 +8,10 @@ abstract class OrderState extends Equatable {
 class InitialState extends OrderState {}
 
 class OrderLoaded extends OrderState {
-  final QuerySnapshot snapshot;
+  final List<Order> orders;
 
-  OrderLoaded(this.snapshot);
+  OrderLoaded(this.orders);
 
   @override
-  List<Object> get props => [snapshot];
+  List<Object> get props => [orders];
 }

@@ -8,10 +8,10 @@ abstract class OrderEvent extends Equatable {
 class StartFirebase extends OrderEvent {}
 
 class UpdateOrder extends OrderEvent {
-  final QuerySnapshot snapshot;
+  final List<Order> orders;
 
-  UpdateOrder(this.snapshot);
+  UpdateOrder(this.orders);
 
   @override
-  List<Object> get props => [snapshot];
+  List<Object> get props => [orders];
 }
