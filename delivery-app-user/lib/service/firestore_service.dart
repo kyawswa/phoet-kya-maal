@@ -4,8 +4,8 @@ import 'package:flutter_app_bloc/model/models.dart';
 class FirestoreService {
   final Firestore firestore = Firestore.instance;
 
-  Stream<QuerySnapshot> getOrders([String userId]) => firestore
+  Stream<QuerySnapshot> getOrders(String userId) => firestore
       .collection('orders')
-      // .where(Order.FIELD_ID, isEqualTo: userId)
+      // .where(Order.FIELD_ID, isEqualTo: userId) //TODO: uncomment when user id is implemented
       .snapshots();
 }

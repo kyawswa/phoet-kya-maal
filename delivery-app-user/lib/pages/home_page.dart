@@ -23,7 +23,10 @@ class HomePage extends StatelessWidget {
         ],
       ),
       body: BlocProvider(
-        create: (context) => OrderBloc(firestore: firestore),
+        create: (context) => OrderBloc(
+          firestore: firestore,
+          userId: '', //TODO: put user id
+        ),
         child: OrderList(),
       ),
       bottomNavigationBar: BottomAppBar(

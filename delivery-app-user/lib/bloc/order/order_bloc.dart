@@ -17,9 +17,10 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
 
   OrderBloc({
     @required this.firestore,
-    this.userId,
+    @required this.userId,
   }) {
-    subscription = firestore.getOrders().listen((snapshot) => add(
+    // fire UpdateOrder event when changes happened in 'orders' collection in firestore
+    subscription = firestore.getOrders(userId).listen((snapshot) => add(
           UpdateOrder(
             snapshot.documents
                 .map((document) => Order.fromMapWithID(document))
