@@ -79,15 +79,17 @@ class _OrderListState extends State<OrderList> {
           if (state.orders.length < 1) {
             return Center(child: Text('မှာယူထားသော အော်ဒါမရှိပါ'));
           }
-          return ListView.separated(
-            itemCount: state.orders.length,
-            itemBuilder: (context, index) => _buildOrderCard(
-              context,
-              orderNum: index + 1,
-              order: state.orders[index],
+          return Scrollbar(
+            child: ListView.separated(
+              itemCount: state.orders.length,
+              itemBuilder: (context, index) => _buildOrderCard(
+                context,
+                orderNum: index + 1,
+                order: state.orders[index],
+              ),
+              separatorBuilder: (_, __) => Divider(color: Colors.transparent),
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 16),
             ),
-            separatorBuilder: (_, __) => Divider(color: Colors.transparent),
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 16),
           );
         }
         return Center(child: CircularProgressIndicator());
@@ -255,6 +257,7 @@ class _OrderListState extends State<OrderList> {
       '${dateTime.day}/${dateTime.month}/${dateTime.year}';
 }
 
+/// display message bar when offline. otherwise return an empty container
 class OfflineAlertWidget extends StatefulWidget {
   final Widget child;
   final double height;
