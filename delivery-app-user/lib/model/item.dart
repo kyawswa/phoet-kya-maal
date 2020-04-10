@@ -20,5 +20,4 @@ class Item {
   String toString() {
     return 'Item{name: $name, total: $total}';
   }
-
 }
