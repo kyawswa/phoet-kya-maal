@@ -71,4 +71,5 @@ flutter_export_environment.sh
 !**/ios/**/default.perspectivev3
 !/packages/flutter_tools/test/data/dart_dependencies_test/**/.packages
 pubspec.lock
+.flutter-plugins-dependencies
 flutter_export_environment.sh
