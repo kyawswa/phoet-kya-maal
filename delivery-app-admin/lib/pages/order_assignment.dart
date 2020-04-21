@@ -74,12 +74,15 @@ class _OrderAssignmentState extends State<OrderAssignment> {
               return Container();
             }
         ),
-      floatingActionButton: FloatingActionButton.extended(
-        elevation: 4.0,
-        label: const Text('Confirm'),
-        onPressed: () {
-          BlocProvider.of<TransporterBloc>(context).add(ConfirmTransporter(orderId, deliveryId));
-        },
+      floatingActionButton: Container(
+        width: MediaQuery.of(context).size.width / 1.5,
+        child: FloatingActionButton.extended(
+          elevation: 4.0,
+          label: const Text('Confirm'),
+          onPressed: () {
+            BlocProvider.of<TransporterBloc>(context).add(ConfirmTransporter(orderId, deliveryId));
+          },
+        ),
       ),
       floatingActionButtonLocation:
       FloatingActionButtonLocation.centerDocked,
