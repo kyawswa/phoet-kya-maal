@@ -14,6 +14,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     LoginEvent event,
   ) async* {
     if(event is LoginAccount) {
+      yield LoginLoading();
       yield* _mapLoginToState(event);
     }
 

@@ -20,18 +20,20 @@ class Login extends StatelessWidget {
               FlatButton(
                 child: Text('close'),
                 onPressed: () {
-                  BlocProvider.of<LoginBloc>(context)
-                      .add(LoginClose());
+                  BlocProvider.of<LoginBloc>(context).add(LoginClose());
                 },
               )
             ],
           );
-
         }
 
         if (state is LoginSuccess) {
           print("navigate to dashboard page");
         }
+
+//        if(state is LoginLoading) {
+//          return Center(child: CircularProgressIndicator());
+//        }
         return Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -39,11 +41,16 @@ class Login extends StatelessWidget {
               Container(
                 width: MediaQuery.of(context).size.width / 1.8,
                 child: TextField(
-                  decoration: InputDecoration(hintText: 'Account ID', border: OutlineInputBorder(),),
+                  decoration: InputDecoration(
+                    hintText: 'Account ID',
+                    border: OutlineInputBorder(),
+                  ),
                   controller: controller,
                 ),
               ),
-              SizedBox(height: 10.0,),
+              SizedBox(
+                height: 10.0,
+              ),
               ButtonTheme(
                 minWidth: MediaQuery.of(context).size.width / 1.8,
                 height: 50.0,
@@ -59,7 +66,12 @@ class Login extends StatelessWidget {
                     BlocProvider.of<LoginBloc>(context)
                         .add(LoginAccount(account));
                   },
-                  child: const Text('Login', style: TextStyle(fontSize: 20)),
+                  child:
+                      (state is LoginLoading)
+                          ? CircularProgressIndicator(
+                              backgroundColor: Colors.white,
+                            )
+                          : Text('Login', style: TextStyle(fontSize: 20)),
                 ),
               ),
             ],
